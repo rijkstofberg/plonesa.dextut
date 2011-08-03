@@ -1,0 +1,198 @@
+Dexterity in 15 minutes or less
+
+My setup:
+
+    - Ubuntu Natty
+    - python 2.7 (with paster and zopeskel)
+    - All buildout essentials already installed
+
+Resources:
+    
+    - http://plone.org/products/dexterity
+    - http://plone.org/products/dexterity/documentation
+    - http://plone.org/products/dexterity/documentation/how-to/install
+    - http://plone.org/products/dexterity/documentation/manual/developer-manual/referencemanual-all-pages
+    - http://plone.org/products/dexterity/documentation/manual/five.grok
+    - http://plone.org/products/dexterity/documentation/manual/behaviors
+    - http://plone.org/products/dexterity/documentation/manual/schema-driven-forms
+    - http://maurits.vanrees.org/weblog/archive/2009/10/david-glick-building-content-types-with-dexterity/view?set_language=nl
+    - http://pypi.python.org/pypi/zopeskel.dexterity
+
+Philosophy
+
+    - Reuse over reinvention
+    - Small over big
+    - Natural interaction over excessive generality
+    - Real code over generated code
+    - Zope 3 over Zope 2
+    - Zope concepts over new paradigms
+    - Automated testing over wishful thinking
+
+Basic concepts:
+    
+    - Version 1.0.1
+        released on Jul 02, 2011
+        Plone 4 & Plone 3
+    - Builds on grok (Convention over configuration)
+    - Makes use of ZCA + z3cforms
+    - Schema, Views, Templates, FTI
+    - Behaviours
+        concept:
+        - enabled per content type
+        - uses adapters
+        - adds functionality and fields to a type
+        - aspect oriented programming
+        examples:
+        - plone.app.referenceablebehavior
+        - plone.app.stagingbehavior
+        - plone.app.versioningbehavior
+
+Starting out:
+    
+    mkdir ~/instances/dexterity
+    cd ~/instances/dexterity
+    virtualenv --no-site-packages .
+    paster create -t plone4_buildout
+    gvim buildout.cfg and add:
+
+        [buildout]
+        extends =
+            http://good-py.appspot.com/release/dexterity/1.0?plone=4.0.7
+
+        [instance]
+        eggs = 
+            Plone
+            PIL
+            plone.app.dexterity
+
+     Note: you can also enable the omelette bits in the buildout. I did. 
+    
+    ./bin/python bootstrap
+    ./bin/buildout -Dvt 240
+    ./bin/instance fg
+
+Through The Web
+
+    go to http://localhost:8080
+    create a site (we created 'minutes')
+    go to http://localhost:8080/minutes/plone_control_panel
+    click on 'Dexterity Content Types'
+    click on 'Add new content type'
+    we add a 'Store'
+    go the content type by clicking on its name
+    - there will be no fields yet
+    go to the 'Behaviours' tab
+    - 'Dublin Core metadata' is on this gives us:
+      Basic metadata + Categorization + Effective range + Ownership
+    - let's export this
+
+On the file system
+
+    add the following to the pertinent buildout.cfg sections:
+    [buildout]
+        parts =
+           zopeskel
+
+    [zopeskel]
+        recipe = zc.recipe.egg
+        eggs =
+           ZopeSkel
+           Paste
+           PasteDeploy
+           PasteScript
+           zopeskel.dexterity
+           ${instance:eggs}
+
+    rerun buildout
+    cd src
+    ../bin/zopeskel dexterity
+    plonesa.minutes
+    rm bootstrap*
+    rm -rf *.cfrm PasteScript-1.7.3-py2.7.egg/ Paste-1.7.5.1-py2.7.egg/ PasteDeploy-1.5.0-py2.7.egg/
+    update buildout.cfg
+    develop =
+        src/plonesa.minutes
+
+    eggs =
+        Plone
+        PIL
+        plone.app.dexterity
+        plonesa.minutes
+    
+    ./bin/buildout -Dvt 240
+
+Dexterity fields
+    IField
+        title
+        description
+        required
+        readonly
+        default
+        missing_value
+
+    IMinMaxLen
+        min_length
+        max_length
+
+    IMinMax 	
+        min 	
+        max
+
+    ICollection
+        value_type
+        unique
+        bool
+
+    IDict 	
+        key_type
+        value_type
+
+    IObject
+        schema
+
+    IRichText
+        default_mime_type
+        output_mime_type
+        allowed_mime_types
+
+    Fields in zope.schema
+        Choice
+        Bytes
+        ASCII
+        BytesLine
+        ASCIILine
+        Text
+        TextLine
+        Bool
+        Int
+        Float
+        Tuple
+        List
+        Set
+        Frozenset
+        Password
+        Dict
+        Datetime
+        Date
+        Timedelta
+        SourceText
+        Object
+        URI
+        Id
+        DottedName
+        InterfaceField
+        Decimal
+
+    Fields in plone.namedfile.field
+        NamedFile
+        NamedImage
+        NamedBlobFile
+        NamedBlobImage
+
+    Fields in z3c.relationfield.schema
+        Relation
+        RelationList
+        RelationChoice
+
+    Fields in plone.app.textfield
+        RichText
