@@ -120,6 +120,13 @@ On the file system
         plonesa.minutes
     
     ./bin/buildout -Dvt 240
+    cd src
+    ../bin/zopeskel dexterity
+    ../../bin/paster addcontent dexterity_content
+
+
+
+
 
 Dexterity fields
     IField
